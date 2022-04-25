@@ -1,12 +1,17 @@
 import AppLoading from "expo-app-loading";
 import React, { useState } from "react";
-import { Text } from "react-native";
+import * as Font from "expo-font";
+import { Text, Image } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Asset } from "expo-asset";
 
 export default function App() {
   const [ready, setReady] = useState(false);
   const onFinish = () => setReady(true);
   const startLoading = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+    await Font.loadAsync(Ionicons.font);
+    await Asset.loadAsync(require("./my-face.jpg"));
+    await Image.prefetch("https://reactnative.dev/img/oss_logo.png");
   };
   if (!ready) {
     return (
@@ -19,3 +24,4 @@ export default function App() {
   }
   return <Text>We are done loading!</Text>;
 }
+
