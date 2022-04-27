@@ -35,9 +35,8 @@ const Tabs = () => {
     >
       <Tab.Screen
         name="Movies"
-        component={Stack}
+        component={Movies}
         options={{
-          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name={"film-outline"} color={color} size={size} />
           ),
@@ -66,4 +65,3 @@ const Tabs = () => {
 };
 
 export default Tabs;
-
