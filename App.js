@@ -3,7 +3,9 @@ import React, { useState } from "react";
 import * as Font from "expo-font";
 import { Text, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Asset, useAssets } from "expo-asset";
+import { Asset } from "expo-asset";
+import { NavigationContainer } from "@react-navigation/native";
+import Tabs from "./navigation/Tabs";
 
 const loadFonts = (fonts) => fonts.map((font) => Font.loadAsync(font));
 
@@ -17,17 +19,11 @@ const loadImages = (images) =>
   });
 
 export default function App() {
-  const [assets] = useAssets([require("./my-face.jpg")]);
-  const [loaded] = Font.useFonts(Ionicons.font);
   const [ready, setReady] = useState(false);
   const onFinish = () => setReady(true);
   const startLoading = async () => {
     const fonts = loadFonts([Ionicons.font]);
-    const images = loadImages([
-      require("./my-face.jpg"),
-      "https://reactnative.dev/img/oss_logo.png",
-    ]);
-    await Promise.all([...fonts, ...images]);
+    await Promise.all([...fonts]);
   };
   if (!ready) {
     return (
@@ -38,6 +34,9 @@ export default function App() {
       />
     );
   }
-  return <Text>We are done loading!</Text>;
+  return (
+    <NavigationContainer>
+      <Tabs />
+    </NavigationContainer>
+  );
 }
-
