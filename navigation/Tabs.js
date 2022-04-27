@@ -3,29 +3,35 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Movies from "../screens/Movies";
 import Tv from "../screens/Tv";
 import Search from "../screens/Search";
-import { Text, View } from "react-native";
+import { useColorScheme } from "react-native";
+import { BLACK_COLOR, DARK_GREY, LIGHT_GREY, YELLOW_COLOR } from "../colors";
 
 const Tab = createBottomTabNavigator();
 
-const Tabs = () => (
-  <Tab.Navigator
-    screenOptions={{
-      tabBarStyle: { backgroundColor: "#4a47ff" },
-      tabBarActiveTintColor: "#1eff00",
-      tabBarInactiveTintColor: "#c307fc",
-      headerTitleStyle: { color: "#f53513" },
-      headerRight: () => (
-        <View>
-          <Text>Hello</Text>
-        </View>
-      ),
-    }}
-  >
-    <Tab.Screen name="Movies" component={Movies} />
-    <Tab.Screen name="Tv" component={Tv} options={{tabBarStyle: {backgroundColor: "#ffd105"},}} />
-    <Tab.Screen name="Search" component={Search} options={{tabBarBadge: 5}}/>
-  </Tab.Navigator>
-);
+const Tabs = () => {
+  console.log(useColorScheme())
+  const isDark = useColorScheme() === "dark";
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        tabBarStyle: {
+          backgroundColor: isDark ? BLACK_COLOR : "white",
+        },
+        tabBarActiveTintColor: isDark ? YELLOW_COLOR : BLACK_COLOR,
+        tabBarInactiveTintColor: isDark ? DARK_GREY : LIGHT_GREY,
+        headerStyle: {
+          backgroundColor: isDark ? BLACK_COLOR : "white",
+        },
+        headerTitleStyle: {
+          color: isDark ? "white" : BLACK_COLOR,
+        },
+      }}
+    >
+      <Tab.Screen name="Movies" component={Movies} />
+      <Tab.Screen name="Tv" component={Tv} />
+      <Tab.Screen name="Search" component={Search} />
+    </Tab.Navigator>
+  );
+};
 
 export default Tabs;
-
