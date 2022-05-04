@@ -49,7 +49,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movies">> = () => {
     await queryClient.refetchQueries(["movies"]);
     setRefreshing(false);
   };
-  const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
+  const loading = nowPlayingLoading || upcomingLoading || trendingLoading;  
 
   return loading ? (
     <Loader />
