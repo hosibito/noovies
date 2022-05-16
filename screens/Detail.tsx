@@ -69,33 +69,41 @@ const Detail: React.FC<DetailScreenProps> = ({
   route: { params },
 }) => {
   const isMovie = "original_title" in params;
-  // const { isLoading, data } = useQuery<MovieDetails | TVDetails>(
-  //   [isMovie ? "movies" : "tv", params.id],
-  //   isMovie ? moviesApi.detail : tvApi.detail
+  console.log("isMovie: ", isMovie)
+  const { isLoading, data } = useQuery<MovieResponse | TVResponse>(
+    [isMovie ? "movies" : "tv", params.id],
+    isMovie ? moviesApi.detail: tvApi.detail 
+  );
+  // const { isLoading: moviesLoading, data: moviesData } = useQuery(
+  //   ["movies", params.id],
+  //   moviesApi.detail,
+  //   {
+  //     enabled: "original_title" in params,
+  //   }
   // );
-  const { isLoading: moviesLoading, data: moviesData } = useQuery(
-    ["movies", params.id],
-    moviesApi.detail,
-    {
-      enabled: "original_title" in params,
-    }
-  );
-  const { isLoading: tvLoading, data: tvData } = useQuery(
-    ["tv", params.id],
-    tvApi.detail,
-    {
-      enabled: "original_name" in params,
-    }
-  );
+  // const { isLoading: tvLoading, data: tvData } = useQuery(
+  //   ["tv", params.id],
+  //   tvApi.detail,
+  //   {
+  //     enabled: "original_name" in params,
+  //   }
+  // );
   useEffect(() => {
     setOptions({
       title: "original_title" in params ? "Movie" : "TV Show",
     });
   }, []);
   
-  const allLoding = moviesLoading && tvLoading;
-  const allData = isMovie ?  (moviesData as unknown) as MovieDetails:(tvData as unknown) as TVDetails;
-  console.log(allData.videos)
+  console.log("aaaa", data )
+  let getData 
+  if (!isLoading){
+    let unknowdata = data as unknown
+    getData = isMovie ? unknowdata as MovieDetails : unknowdata as TVDetails
+  }
+  
+  // const allLoding = moviesLoading && tvLoading;
+  // const allData = isMovie ?  (moviesData as unknown) as MovieDetails:(tvData as unknown) as TVDetails;
+  // console.log(allData.videos)
   const openYTLink = async (videoID: string) => {
       const baseUrl = `https://m.youtube.com/watch?v=${videoID}`;
       console.log(baseUrl)
@@ -124,8 +132,8 @@ const Detail: React.FC<DetailScreenProps> = ({
       </Header>
       <Data>
         <Overview>{params.overview}</Overview>
-        {allLoding ? <Loader /> : null}
-        {allData?.videos?.results?.map((video) =>
+        {isLoading ? <Loader /> : null}
+        {getData?.videos.results.map((video) =>
           video.site === "YouTube" ? (
             <VideoBtn key={video.key} onPress={() => openYTLink(video.key)}>
               <Ionicons name="logo-youtube" color="white" size={24} />
