@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useEffect } from "react";
-import { Dimensions, StyleSheet, Linking } from "react-native";
+import { Dimensions, StyleSheet, Linking, TouchableOpacity, Share, Platform } from "react-native";
 import styled from "styled-components/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Movie, MovieDetails, MovieResponse, moviesApi, TV, tvApi, TVDetails, TVResponse } from "../api";
@@ -69,11 +69,42 @@ const Detail: React.FC<DetailScreenProps> = ({
   route: { params },
 }) => {
   const isMovie = "original_title" in params;
-  console.log("isMovie: ", isMovie)
+
   const { isLoading, data } = useQuery<MovieResponse | TVResponse>(
     [isMovie ? "movies" : "tv", params.id],
     isMovie ? moviesApi.detail: tvApi.detail 
   );
+  
+  let unknowdata = data as unknown
+  const getData = isMovie ? unknowdata as MovieDetails : unknowdata as TVDetails
+
+  const shareMedia = async() => {
+    const isAndroid = Platform.OS === "android"
+    const homepage = isMovie ? `https://www.imdb.com/title/${ (getData as MovieDetails).imdb_id }/` : getData.homepage
+    if (isAndroid) {
+      await Share.share({
+        message: `${params.overview}\nCheck it out: ${homepage}`,
+        title:
+          "original_title" in params
+            ? params.original_title
+            : params.original_name,
+      });
+    } else {
+      await Share.share({
+        url: homepage,
+        title:
+          "original_title" in params
+            ? params.original_title
+            : params.original_name,
+      });
+    }
+  }
+  const ShareButton = () => (
+    <TouchableOpacity onPress={shareMedia}>
+      <Ionicons name="share-outline" color="white" size={24} />
+    </TouchableOpacity>
+  );
+  console.log("isMovie: ", isMovie)
   // const { isLoading: moviesLoading, data: moviesData } = useQuery(
   //   ["movies", params.id],
   //   moviesApi.detail,
@@ -93,13 +124,20 @@ const Detail: React.FC<DetailScreenProps> = ({
       title: "original_title" in params ? "Movie" : "TV Show",
     });
   }, []);
+  useEffect(() => {
+    if (data) {
+      setOptions({
+        headerRight: () => <ShareButton />,
+      });
+    }
+  }, [data]);
   
-  console.log("aaaa", data )
-  let getData 
-  if (!isLoading){
-    let unknowdata = data as unknown
-    getData = isMovie ? unknowdata as MovieDetails : unknowdata as TVDetails
-  }
+  // console.log("aaaa", data )
+  // let getData 
+  // if (!isLoading){
+  //   let unknowdata = data as unknown
+  //   getData = isMovie ? unknowdata as MovieDetails : unknowdata as TVDetails
+  // }
   
   // const allLoding = moviesLoading && tvLoading;
   // const allData = isMovie ?  (moviesData as unknown) as MovieDetails:(tvData as unknown) as TVDetails;
